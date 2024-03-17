@@ -27,8 +27,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
 // integers, an array of three integers, and a slice of integers.
@@ -41,6 +39,18 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        if u8::try_from(tuple.0).is_err()
+            || u8::try_from(tuple.1).is_err()
+            || u8::try_from(tuple.2).is_err()
+        {
+            return Err(Self::Error::IntConversion);
+        }
+
+        return Ok(Color {
+            red: u8::try_from(tuple.0).unwrap(),
+            green: u8::try_from(tuple.1).unwrap(),
+            blue: u8::try_from(tuple.2).unwrap(),
+        });
     }
 }
 
@@ -48,6 +58,17 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        for elem in arr {
+            if u8::try_from(elem).is_err() {
+                return Err(Self::Error::IntConversion);
+            }
+        }
+
+        return Ok(Color {
+            red: u8::try_from(arr[0]).unwrap(),
+            green: u8::try_from(arr[1]).unwrap(),
+            blue: u8::try_from(arr[2]).unwrap(),
+        });
     }
 }
 
@@ -55,6 +76,20 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(Self::Error::BadLen);
+        }
+        for &elem in slice {
+            if u8::try_from(elem).is_err() {
+                return Err(Self::Error::IntConversion);
+            }
+        }
+
+        return Ok(Color {
+            red: u8::try_from(slice[0]).unwrap(),
+            green: u8::try_from(slice[1]).unwrap(),
+            blue: u8::try_from(slice[2]).unwrap(),
+        });
     }
 }
 
